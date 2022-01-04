@@ -1,0 +1,67 @@
+---
+title: "Summary Takeaways"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("../scripts/plot_3.R")
+source("../scripts/Summary_function.R")
+source("../scripts/plot_1.R")
+source("../scripts/plot_2.R")
+source("../scripts/plot_3.R")
+source("../scripts/table_1.R")
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Summary of Project Takeaways
+
+## First Takeaway
+According to the analysis of deaths in New York, we found that the deaths from COVID from those identifying as PoC were more than two times greater than those identifying as white. **The broad implication could be a that some factor such as differences in working class or support resources is causing PoC no have more deaths.**
+```{r, echo=FALSE, warning=FALSE}
+data_2 <- read.csv("../data/Death_Counts_For_COVID-19.csv")
+plot_3 <- make_plot_3(data_2)
+plot_3
+```
+
+
+
+## Second Takeaway
+Our scatterplots about distribution of COVID-19 deaths divided by race across states showed that among all states, there were significant disproportional impact between races. **The broad implication of this data is that there might be some systemic issue as to why COVID-19 consistently impacts races more than another across state lines**
+
+```{r, echo = FALSE, warning=FALSE}
+data_2 <- read.csv('../data/Death_Counts_For_COVID-19.csv', stringsAsFactors = FALSE)
+make_plot_one(data_2, 'Distribution of COVID-19 deaths (%)')
+make_plot_one(data_2, 'Weighted distribution of population (%)')
+```
+
+
+## Third Takeaway
+
+An insight team found was that the perception afforded from data can vary depending on how data is analyzed and visualized. For example, while one pie chart showing COVID-19 disparities by race across the United States showed those identifying as white have the highest disparity, a bar chart showing deaths of those identifying as white compared to PoC (People of Color) in New York showed PoC were impacted significantly more. **The broad implication of this insight is to remember that data is fundamentally limited and can be analyzed in various ways that can result in contrasting insights.**
+
+```{r, echo=FALSE}
+df1 <- read.csv("../data/Death_Counts_For_COVID-19.csv", stringsAsFactors = FALSE)
+plot2_neg(df1)
+plot2_pos(df1)
+```

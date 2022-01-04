@@ -1,0 +1,92 @@
+---
+title: "index.Rmd"
+date: "11/30/2020"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library('knitr')
+library('ggplot2')
+source("scripts/Summary_function.R")
+source("scripts/plot_1.R")
+source("scripts/plot_2.R")
+source("scripts/plot_3.R")
+source("scripts/table_1.R")
+
+```
+
+## Introduction to dataset
+The "Death_Counts_For_COVID-19" dataset provides data recent up until 11/12/20 about COVID-19 deaths by race and Hispanic origin in the United States. The dataset provides information about the country as a whole while also providing data by state.
+
+Our purpose is to identify if there's disparities between different racial groups and COVID-19 deaths.
+
+Source: https://www.cdc.gov/nchs/nvss/vsrr/covid19/health_disparities.htm
+This dataset collected by the CDC is available as either a CSV or API, and will give us up to date data about the total deaths for each racial group from COVID-19, helping us answer our core questions regarding if there is a disproportionate amount of deaths for PoC.
+
+```{r, echo = FALSE}
+df <- read.csv("data/Death_Counts_For_COVID-19.csv", stringsAsFactors = FALSE)
+# A function returns a list of the states which have the most deaths count of
+# all the race groups
+most_deaths_states_list <- get_most_deaths_states_list(df)
+
+# A function returns a list of the states which have the most distribution of
+# COVID-19 deaths (%)
+ditr_covid_death_list <-
+  get_states_list(df, "Distribution of COVID-19 deaths (%)")
+
+# A function returns a list of the states which have the most weighted
+# distribution of population (%)
+wdp_list <- get_states_list(df, "Weighted distribution of population (%)")
+
+# A function returns a list of the states which have the most unweighted
+# distribution of population (%)
+udp_list <- get_states_list(df, "Unweighted distribution of population (%)")
+```
+## Summary information
+### Insights from the list "most_deaths_states_list"
+This list shows the certain states of most death counts of each race group. We found out the most COIVD-19 death count of non Hispanic White is in `r most_deaths_states_list$nh_white`, the most COIVD-19 death count of non Hispanic Black or African American is in `r most_deaths_states_list$nh_black_african_american`, the most COIVD-19 death count of non Hispanic American Indian or Alaska Native is in `r most_deaths_states_list$nh_us_indian_alaska_native`, the most COIVD-19 death count of non Hispanic Asian is in `r most_deaths_states_list$nh_asian`, the most COIVD-19 death count of non Hispanic Native Hawaiian or Other Pacific Islander is in `r most_deaths_states_list$nh_hawaiian_pacific_islander`, the most COIVD-19 death count of Hispanic or Latino is in `r most_deaths_states_list$hispanic_or_latino`, the most COIVD-19 death count of Other is in `r most_deaths_states_list$other`.
+
+### Insights from the list "ditr_covid_death_list" and "wdp_list"
+The first list shows the certain states of the most distribution of COVID-19 deaths (%) of each race group, whereas the second one shows the certain states of the most weighted distribution of population of each race group. Ideally, if COVID has the same impact on each race group, the two lists should be identical. However, by comparing them, we found out the most weighted distribution of population of non Hispanic White is in `r wdp_list$nh_white`, whereas the most distribution of COVID-19 deaths (%) of the same race group is in `r ditr_covid_death_list$nh_white`. It shows non Hispanic Black or African American, Hispanic or Latino and Other racial groups also have different states of distributions of the most weighted population and the most COVID-19 deaths, whereas non Hispanic American Indian or Alaska Native, non Hispanic Asian and non Hispanic Native Hawaiian or Other Pacific Islander racial groups have the same states of distributions of the most weighted population and the most COVID-19 deaths. By comparing two lists, we had an assumption that the racial groups of non Hispanic White, non Hispanic Black or African American, Hispanic or Latino and Other are affected disproportionately by COVID-19.
+
+### Summary table
+This summary table allows insight into the amount of death that has occurred during the COVID-19 outbreak by way of the amount of death by race this table is aggregated by the State in which the death occurred to show disparities among states in the US.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+df <- read.csv("data/Death_Counts_For_COVID-19.csv", stringsAsFactors = FALSE)
+table_done <- summary_table(df)
+colnames(table_done) <-c("State", "Caucasian", "African American", "Native American", "Asian", "Hawaiian", "LatinX")
+kable(table_done)
+
+```
+An insight gathered from the table is that Native American's death count from most of the states are minimal compared to the death count of Caucasian.
+
+## Visualizations
+### Plot 1
+
+This shows a scatter plot derived from our Death_Counts_For_COVID-19.csv dataset. It shows the weighted distribution of deaths per state as well as the weighted population. These two plots seem to show what the amount of deaths are more or less proportional to the amount of deaths except for a few cases. The cases of both blue and red seem to be higher on average for the amount of death meaning they are dying at a higher rate proportional to their population. This could be because of different immunities in races because of exposure to diseases.
+
+```{r, echo = FALSE, warning=FALSE}
+data_2 <- read.csv('./data/Death_Counts_For_COVID-19.csv', stringsAsFactors = FALSE)
+make_plot_one(data_2, 'Distribution of COVID-19 deaths (%)')
+make_plot_one(data_2, 'Weighted distribution of population (%)')
+```
+
+### Plot 2
+
+The purpose of these pie charts are to investigate disparities existing within each ethnic/racial group in terms of COVID impact. This was done by finding the difference between the % of distribution COVID-19 deaths and the % weighted distribution of population. The premise is that if COVID-19 affected all races/ethnicities equally, the two percentage indicators would be equal. Thus the difference reflects COVID unproportionally impacting different races/ethnicities which could indicate disparity. The first pie chart shows races/ethnicities impacted greater than their weighted distribution of population while the other represents races/ethnicities that were impacted less than expected. A surprising observation was that those identified as white had the greatest negative disparity. Also, the second pie chart shows those identifying as hispanic/latino as being the least impacted by COVID.
+```{r, echo = FALSE}
+df1 <- read.csv("data/Death_Counts_For_COVID-19.csv", stringsAsFactors = FALSE)
+plot2_neg(df1)
+plot2_pos(df1)
+```
+
+### Plot 3
+
+The chart below represents the deaths of Caucasian people and the deaths of all People of Color from the state with the highest death, which at the time of writing is New York. These parameters were chosen because it gives us a look at the racial disparity in deaths for the State doing the worst overall.. Although this shows how the State doing the worst differs, the sample is not neccessarily representative of the racial distribution of the sample size. In this case, you can see that there is a large disparity between deaths among Caucasians and People of Color.
+
+```{r, echo = FALSE, warning= FALSE}
+data_2 <- read.csv('./data/Death_Counts_For_COVID-19.csv')
+plot_3 <- make_plot_3(data_2)
+plot_3
+```
